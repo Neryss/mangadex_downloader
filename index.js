@@ -81,11 +81,19 @@ async function	getMangaChapters(id)
 
 async function	getVolumeChapters(data)
 {
+	let urls = new Array(Object.keys(data.chapters));
+	let i = 0;
 	for (let key in data.chapters)
 	{
-		tmp = await getChapter(data.chapters[key].id);
-		console.log(tmp);
+		urls[i] = await getChapter(data.chapters[key].id);
+		i++;
 	}
+	return (urls);
+}
+
+async function	construct_chapters(chapters)
+{
+	
 }
 
 // TODO transfer chapters into urls
@@ -95,7 +103,8 @@ async function	main()
 {
 	// auth();
 	tmp = await getMangaChapters("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
-	getVolumeChapters(tmp.volumes[1]);
+	lst = await getVolumeChapters(tmp.volumes[1]);
+	console.log(lst);
 	// let urls = new Array(Object.keys(tmp.volumes[1].chapters));
 	// let i = 0;
 	// for (let key in tmp.volumes[1].chapters)
