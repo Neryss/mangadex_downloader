@@ -35,7 +35,7 @@ async function	construct_urls(data)
 	return new Promise((resolve, reject) => {
 		tmp = data.chapter.data;
 		for (i = 0; i < tmp.length; i++)
-		tmp[i] = url + tmp[i];
+			tmp[i] = url + tmp[i];
 		resolve(tmp);
 	}).catch((err) => {
 		console.log(err);
@@ -81,7 +81,7 @@ async function	getMangaChapters(id)
 
 async function	getVolumeChapters(data)
 {
-	let urls = new Array(Object.keys(data.chapters));
+	let urls = new Array(Object.keys(data.chapters).length);
 	let i = 0;
 	for (let key in data.chapters)
 	{
@@ -93,7 +93,15 @@ async function	getVolumeChapters(data)
 
 async function	construct_chapters(chapters)
 {
-	
+	urlPack = new Array(Object.keys(chapters).length);
+	console.log(chapters[1]);
+	let i = 0;
+	for (j = 0; j < Object.keys(chapters).length; j++)
+	{
+		urlPack[i] = await construct_urls(chapters[j]);
+		i++;
+	}
+	return (urlPack);
 }
 
 // TODO transfer chapters into urls
@@ -104,7 +112,9 @@ async function	main()
 	// auth();
 	tmp = await getMangaChapters("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
 	lst = await getVolumeChapters(tmp.volumes[1]);
-	console.log(lst);
+	// console.log(lst);
+	other = await construct_chapters(lst);
+	console.log(other);
 	// let urls = new Array(Object.keys(tmp.volumes[1].chapters));
 	// let i = 0;
 	// for (let key in tmp.volumes[1].chapters)
