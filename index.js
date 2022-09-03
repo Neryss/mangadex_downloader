@@ -42,10 +42,11 @@ async function	construct_urls(data)
 	})
 }
 
+// TODO create dir directly here to handle multiple chapters
 async function	downloadFile(url, dir_name, name)
 {
 	return new Promise((resolve, reject) => {
-		const actual_path = path.resolve(__dirname, dir_name, name);
+		const actual_path = path.resolve(__dirname, "images", name);
 		const writer = fs.createWriteStream(actual_path);
 		
 		axios({
@@ -104,6 +105,15 @@ async function	construct_chapters(chapters)
 	return (urlPack);
 }
 
+async function	downloadChapters(urls)
+{
+	for (i = 0; i < urls.length; i++)
+	{
+		for (j = 0; j < urls[i].length; j++)
+			downloadFile(urls[i][j], "chapter1", "chapter" + j + "page" + i + ".png");
+	}
+}
+
 // TODO transfer chapters into urls
 // TODO create flexible download solution (directories, name etc...)
 
@@ -112,9 +122,10 @@ async function	main()
 	// auth();
 	tmp = await getMangaChapters("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
 	lst = await getVolumeChapters(tmp.volumes[1]);
-	// console.log(lst);
+	console.log(lst);
 	other = await construct_chapters(lst);
 	console.log(other);
+	downloadChapters(other);
 	// let urls = new Array(Object.keys(tmp.volumes[1].chapters));
 	// let i = 0;
 	// for (let key in tmp.volumes[1].chapters)
