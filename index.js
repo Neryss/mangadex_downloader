@@ -18,10 +18,10 @@ function	auth()
 })
 }
 
-function	getChapter()
+function	getChapter(chapterId)
 {
 	return new Promise((resolve, reject) => {
-		axios.get("https://api.mangadex.org/at-home/server/ef5cfc08-662c-491e-b0ac-0c2f20bca10b").then((res) => {
+		axios.get("https://api.mangadex.org/at-home/server/" + chapterId).then((res) => {
 		resolve(res.data);
 	}).catch((err) => {
 		reject(err);
@@ -42,10 +42,10 @@ async function	construct_urls(data)
 	})
 }
 
-async function	downloadFile(url, name)
+async function	downloadFile(url, dir_name, name)
 {
 	return new Promise((resolve, reject) => {
-		const actual_path = path.resolve(__dirname, "images", name);
+		const actual_path = path.resolve(__dirname, dir_name, name);
 		const writer = fs.createWriteStream(actual_path);
 		
 		axios({
@@ -70,28 +70,42 @@ async function	getMangaChapters(id)
 		axios.get(urlParsed, {
 			params: {translatedLanguage: ["en"]}
 		}).then((res) => {
-				resolve(res.data);
-			}).catch((err) => {
-				reject(err);
-			})
+			resolve(res.data);
 		}).catch((err) => {
-			console.log(err);
+			reject(err);
 		})
-	}
-	
-	async function	main()
-	{
-		auth();
-		// temp = await getChapter();
-		// console.log(temp);
-		// data = await construct_urls(temp);
-		// console.log(data[0]);
-		// console.log(temp);
-		// for (i = 0; i < data.length; i++)
-		// 	await downloadFile(data[i], "page" + i + ".png");
-		tmp = await getMangaChapters("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
-		console.log(tmp.volumes["1"].chapters);
-		return(0);
-	}
-	
-	main();
+	}).catch((err) => {
+		console.log(err);
+	})
+}
+
+async function	getVolumeChapters(data)
+{
+	return new Promise((resolve, reject) => {
+		// for (let key in data.chapters)
+		// 	console.log(key, data.chapters[key]);
+		axios.get()
+		resolve;
+	})
+}
+
+// TODO transfer chapters into urls
+// TODO create flexible download solution (directories, name etc...)
+
+async function	main()
+{
+	// auth();
+	// temp = await getChapter();
+	// data = await construct_urls(temp);
+	// for (i = 0; i < data.length; i++)
+	// 	await downloadFile(data[i], "page" + i + ".png");
+	tmp = await getMangaChapters("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
+	// console.log(tmp.volumes["1"].chapters);
+	// for (let key in tmp.volumes)
+	// 	console.log(key, tmp.volumes[key]);
+	await getVolumeChapters(tmp.volumes[1]);
+	// console.log(tmp.volumes[1]);
+	return(0);
+}
+
+main();
