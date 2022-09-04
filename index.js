@@ -47,7 +47,8 @@ async function	construct_urls(data)
 async function	downloadFile(url, dir_name, name)
 {
 	return new Promise((resolve, reject) => {
-		const actual_path = path.resolve(__dirname, "images", name);
+		console.log(url);
+		const actual_path = path.resolve(__dirname, dir_name, name);
 		const writer = fs.createWriteStream(actual_path);
 		
 		axios({
@@ -96,7 +97,6 @@ async function	getVolumeChapters(data)
 async function	construct_chapters(chapters)
 {
 	urlPack = new Array(Object.keys(chapters).length);
-	// console.log(chapters[1]);
 	let i = 0;
 	for (j = 0; j < Object.keys(chapters).length; j++)
 	{
@@ -107,14 +107,17 @@ async function	construct_chapters(chapters)
 	return (urlPack);
 }
 
+// TODO might need to wait for the dir creation before doing things
+
 async function	downloadChapters(urls, tmp)
 {
-	console.log("JE SUIS LA EN FAIT");
-	// console.log(tmp);
 	for (i = 0; i < urls.length; i++)
 	{
+		fs.mkdir("./chapter" + urls[i].id,{ recursive: true }, (err) => {
+			console.log("error: " + err);
+		})
 		for (j = 0; j < urls[i].length; j++)
-			downloadFile(urls[i][j], "chapter1", "chapter" + j + "page" + i + ".png");
+			await downloadFile(urls[i][j], "chapter" + j, "page" + i + ".png");
 	}
 }
 
@@ -131,7 +134,7 @@ async function	main()
 	// console.log(lst);
 	other = await construct_chapters(lst, tmp);
 	console.log(other);
-	// downloadChapters(other);
+	downloadChapters(other);
 	// let urls = new Array(Object.keys(tmp.volumes[1].chapters));
 	// let i = 0;
 	// for (let key in tmp.volumes[1].chapters)
