@@ -155,16 +155,36 @@ async function	downloadChapters(urls)
 	}
 }
 
+/*
+//	parse argument to get the manga uuid
+*/
+
+async function	parseUrl(mangaUrl)
+{
+	parsedUrl = mangaUrl.substring(mangaUrl.indexOf('title/') + 6);
+	parsedUrl = parsedUrl.substring(0, parsedUrl.indexOf('/'));
+	return (parsedUrl);
+}
+
 // TODO create flexible download solution (directories, name etc...)
 // TODO chapter url as argument?
 async function	main()
 {
 	// auth();
-	tmp = await getMangaVolumes("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
-	lst = await getVolumeChapters(tmp.volumes[1]);
-	other = await construct_chapters(lst);
-	console.log(other);
-	downloadChapters(other);
+	if(!process.argv[2])
+	{
+		console.error("error: enter url as argument");
+		return (1);
+	}
+	url = process.argv[2];
+	console.log(url);
+	url = await parseUrl(url);
+	console.log(url);
+	// tmp = await getMangaVolumes("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
+	// lst = await getVolumeChapters(tmp.volumes[1]);
+	// other = await construct_chapters(lst);
+	// console.log(other);
+	// downloadChapters(other);
 	return(0);
 }
 
