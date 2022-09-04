@@ -118,7 +118,7 @@ async function	downloadChapters(urls, tmp)
 				console.log("error: " + err);
 		})
 		for (j = 0; j < urls[i].length; j++)
-			await downloadFile(urls[i][j], "chapter" + j, "page" + i + ".png");
+			await downloadFile(urls[i][j], "chapter" + i, "page" + j + ".png");
 	}
 }
 
