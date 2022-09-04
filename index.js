@@ -31,6 +31,7 @@ function	getChapter(chapterId)
 
 async function	construct_urls(data)
 {
+	console.log(data);
 	url = data.baseUrl + "/data/" + data.chapter.hash + "/";
 	return new Promise((resolve, reject) => {
 		tmp = data.chapter.data;
@@ -66,7 +67,6 @@ async function	downloadFile(url, dir_name, name)
 async function	getMangaChapters(id)
 {
 	urlParsed = "https://api.mangadex.org/manga/" + id + "/aggregate";
-	console.log(urlParsed);
 	return new Promise((resolve, reject) => {
 		axios.get(urlParsed, {
 			params: {translatedLanguage: ["en"]}
@@ -84,6 +84,7 @@ async function	getVolumeChapters(data)
 {
 	let urls = new Array(Object.keys(data.chapters).length);
 	let i = 0;
+	// console.log(data);
 	for (let key in data.chapters)
 	{
 		urls[i] = await getChapter(data.chapters[key].id);
@@ -95,18 +96,21 @@ async function	getVolumeChapters(data)
 async function	construct_chapters(chapters)
 {
 	urlPack = new Array(Object.keys(chapters).length);
-	console.log(chapters[1]);
+	// console.log(chapters[1]);
 	let i = 0;
 	for (j = 0; j < Object.keys(chapters).length; j++)
 	{
 		urlPack[i] = await construct_urls(chapters[j]);
+		urlPack[i].id = i;
 		i++;
 	}
 	return (urlPack);
 }
 
-async function	downloadChapters(urls)
+async function	downloadChapters(urls, tmp)
 {
+	console.log("JE SUIS LA EN FAIT");
+	// console.log(tmp);
 	for (i = 0; i < urls.length; i++)
 	{
 		for (j = 0; j < urls[i].length; j++)
@@ -121,11 +125,13 @@ async function	main()
 {
 	// auth();
 	tmp = await getMangaChapters("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
+	// console.log(tmp.volumes);
 	lst = await getVolumeChapters(tmp.volumes[1]);
-	console.log(lst);
-	other = await construct_chapters(lst);
+	// console.log(tmp.volumes);
+	// console.log(lst);
+	other = await construct_chapters(lst, tmp);
 	console.log(other);
-	downloadChapters(other);
+	// downloadChapters(other);
 	// let urls = new Array(Object.keys(tmp.volumes[1].chapters));
 	// let i = 0;
 	// for (let key in tmp.volumes[1].chapters)
