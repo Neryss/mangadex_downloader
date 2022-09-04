@@ -113,8 +113,9 @@ async function	downloadChapters(urls, tmp)
 {
 	for (i = 0; i < urls.length; i++)
 	{
-		fs.mkdir("./chapter" + urls[i].id,{ recursive: true }, (err) => {
-			console.log("error: " + err);
+		if (!fs.existsSync("./chapter" + urls[i].id))
+			fs.mkdir("./chapter" + urls[i].id,{ recursive: true }, (err) => {
+				console.log("error: " + err);
 		})
 		for (j = 0; j < urls[i].length; j++)
 			await downloadFile(urls[i][j], "chapter" + j, "page" + i + ".png");
