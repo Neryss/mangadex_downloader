@@ -178,10 +178,10 @@ async function	main()
 		return (1);
 	}
 	url = await parseUrl(process.argv[2]);
-	tmp = await getMangaVolumes(url);
-	lst = await getVolumeChapters(tmp.volumes[2]);
-	other = await construct_chapters(lst);
-	downloadChapters(other);
+	manga = await getMangaVolumes(url);
+	chapters = await getVolumeChapters(manga.volumes[2]);
+	c_list = await construct_chapters(lst);
+	downloadChapters(c_list);
 	return(0);
 }
 
