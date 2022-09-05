@@ -172,6 +172,18 @@ function delay(time) {
 	return new Promise(resolve => setTimeout(resolve, time));
 }
 
+async function	downloadManga(manga)
+{
+	for (k = 1; k < Object.keys(manga.volumes).length; k++)
+	{
+		chapters = await getVolumeChapters(manga.volumes[k]);
+		console.log("####### CHAPTERS HERE #######")
+		console.log(chapters);
+		c_list = await construct_chapters(chapters);
+		await downloadChapters(c_list);
+	}
+}
+
 //	TODO create flexible download solution (directories, name etc...)
 //	TODO fix rate limit
 async function	main()
@@ -183,21 +195,11 @@ async function	main()
 	}
 	url = await parseUrl(process.argv[2]);
 	manga = await getMangaVolumes(url);
-	// console.log(manga);
-	// let chapters_list;
-	// for (i = 1; i < Object.keys(manga.volumes).length; i++)
-	// {
-	// 	chapters_list += await getVolumeChapters(manga.volumes[i]);
-	// }
-	// console.log(chapters_list);
-	for (k = 1; k < 3; k++)
-	{
-		chapters = await getVolumeChapters(manga.volumes[k]);
-		console.log("####### CHAPTERS HERE #######")
-		console.log(chapters);
-		c_list = await construct_chapters(chapters);
-		await downloadChapters(c_list);
-	}
+	chapters = await getVolumeChapters(manga.volumes[1]);
+	c_list = await construct_chapters(chapters);
+	await (downloadChapters(c_list));
+	console.log(manga);
+	
 	return(0);
 }
 
