@@ -51,7 +51,7 @@ async function	construct_urls(data)
 			tmp[i] = url + tmp[i];
 		resolve(tmp);
 	}).catch((err) => {
-		console.log(err);
+		reject(err);
 	})
 }
 
@@ -104,11 +104,13 @@ async function	getMangaVolumes(id)
 
 async function	getVolumeChapters(data)
 {
+	// console.log(data);
 	let urls = new Array(Object.keys(data.chapters).length);
 	let i = 0;
 	for (let key in data.chapters)
 	{
 		urls[i] = await getChapter(data.chapters[key].id);
+		// await delay(300);
 		urls[i].chapter_number = data.chapters[key].chapter;
 		i++;
 	}
@@ -143,7 +145,6 @@ async function	downloadChapters(urls)
 {
 	for (i = 0; i < urls.length; i++)
 	{
-		console.log(urls[i]);
 		if (!fs.existsSync("./chapter" + urls[i].id))
 			fs.mkdir("./chapter" + urls[i].id,{ recursive: true }, (err) => {
 				console.log("error: " + err);
@@ -167,7 +168,12 @@ async function	parseUrl(mangaUrl)
 	return (parsedUrl);
 }
 
-// TODO create flexible download solution (directories, name etc...)
+function delay(time) {
+	return new Promise(resolve => setTimeout(resolve, time));
+}
+
+//	TODO create flexible download solution (directories, name etc...)
+//	TODO fix rate limit
 async function	main()
 {
 	if(!process.argv[2])
@@ -177,9 +183,21 @@ async function	main()
 	}
 	url = await parseUrl(process.argv[2]);
 	manga = await getMangaVolumes(url);
-	chapters = await getVolumeChapters(manga.volumes[2]);
-	c_list = await construct_chapters(lst);
-	downloadChapters(c_list);
+	// console.log(manga);
+	// let chapters_list;
+	// for (i = 1; i < Object.keys(manga.volumes).length; i++)
+	// {
+	// 	chapters_list += await getVolumeChapters(manga.volumes[i]);
+	// }
+	// console.log(chapters_list);
+	for (i = 1; i < 3; i++)
+	{
+		chapters = await getVolumeChapters(manga.volumes[i]);
+		console.log("####### CHAPTERS HERE #######")
+		console.log(chapters);
+		c_list = await construct_chapters(chapters);
+		// await downloadChapters(c_list);
+	}
 	return(0);
 }
 
