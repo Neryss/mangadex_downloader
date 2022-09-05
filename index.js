@@ -190,13 +190,13 @@ async function	main()
 	// 	chapters_list += await getVolumeChapters(manga.volumes[i]);
 	// }
 	// console.log(chapters_list);
-	for (i = 1; i < 3; i++)
+	for (k = 1; k < 3; k++)
 	{
-		chapters = await getVolumeChapters(manga.volumes[i]);
+		chapters = await getVolumeChapters(manga.volumes[k]);
 		console.log("####### CHAPTERS HERE #######")
 		console.log(chapters);
 		c_list = await construct_chapters(chapters);
-		// await downloadChapters(c_list);
+		await downloadChapters(c_list);
 	}
 	return(0);
 }
