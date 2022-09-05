@@ -108,7 +108,10 @@ async function	getVolumeChapters(data)
 	let i = 0;
 	for (let key in data.chapters)
 	{
+		// console.log(data.chapters[key].chapter);
 		urls[i] = await getChapter(data.chapters[key].id);
+		urls[i].chapter_number = data.chapters[key].chapter;
+		// console.log(urls[i]);
 		i++;
 	}
 	return (urls);
@@ -125,7 +128,7 @@ async function	construct_chapters(chapters)
 	for (j = 0; j < Object.keys(chapters).length; j++)
 	{
 		urlPack[i] = await construct_urls(chapters[j]);
-		urlPack[i].id = i + 1;
+		urlPack[i].id = chapters[j].chapter_number;
 		i++;
 	}
 	return (urlPack);
@@ -135,22 +138,22 @@ async function	construct_chapters(chapters)
 //	download chapters from a volume as the following pattern:
 //	each chapter has a file name `chapter${number}`, containing the pages number from 0 to the last page as a name
 */
+
 // TODO mulitple volumes at the same time
-// TODO chapters not reseting each volume
 
 async function	downloadChapters(urls)
 {
 	for (i = 0; i < urls.length; i++)
 	{
-		console.log(urls[i].id);
+		console.log(urls[i]);
 		if (!fs.existsSync("./chapter" + urls[i].id))
 			fs.mkdir("./chapter" + urls[i].id,{ recursive: true }, (err) => {
 				console.log("error: " + err);
 		})
 		for (j = 0; j < urls[i].length; j++)
 		{
-			downloadFile(urls[i][j], "chapter" + (i + 1), "page" + j + ".png");
-			console.log(`chapter ${i + 1}, page ${j} done`);
+			downloadFile(urls[i][j], "chapter" + urls[i].id, "page" + j + ".png");
+			console.log(`chapter ${urls[i].id}, page ${j} done`);
 		}
 	}
 }
@@ -167,24 +170,18 @@ async function	parseUrl(mangaUrl)
 }
 
 // TODO create flexible download solution (directories, name etc...)
-// TODO chapter url as argument?
 async function	main()
 {
-	// auth();
 	if(!process.argv[2])
 	{
 		console.error("error: enter url as argument");
 		return (1);
 	}
-	url = process.argv[2];
-	console.log(url);
-	url = await parseUrl(url);
-	console.log(url);
-	// tmp = await getMangaVolumes("259dfd8a-f06a-4825-8fa6-a2dcd7274230");
-	// lst = await getVolumeChapters(tmp.volumes[1]);
-	// other = await construct_chapters(lst);
-	// console.log(other);
-	// downloadChapters(other);
+	url = await parseUrl(process.argv[2]);
+	tmp = await getMangaVolumes(url);
+	lst = await getVolumeChapters(tmp.volumes[2]);
+	other = await construct_chapters(lst);
+	downloadChapters(other);
 	return(0);
 }
 
