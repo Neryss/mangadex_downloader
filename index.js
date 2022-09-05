@@ -108,10 +108,8 @@ async function	getVolumeChapters(data)
 	let i = 0;
 	for (let key in data.chapters)
 	{
-		// console.log(data.chapters[key].chapter);
 		urls[i] = await getChapter(data.chapters[key].id);
 		urls[i].chapter_number = data.chapters[key].chapter;
-		// console.log(urls[i]);
 		i++;
 	}
 	return (urls);
