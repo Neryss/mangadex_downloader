@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
+const axiosRetry = require('axios-retry');
 
 /*
 // if you need to use authentification for any reason, you can use the following function
@@ -27,8 +28,7 @@ async function	auth()
 //	return a single chapter data
 */
 
-function	getChapter(chapterId)
-{
+async function	getChapter(chapterId) {
 	return new Promise((resolve, reject) => {
 		axios.get("https://api.mangadex.org/at-home/server/" + chapterId).then((res) => {
 		resolve(res.data);
@@ -195,9 +195,10 @@ async function	main()
 	}
 	url = await parseUrl(process.argv[2]);
 	manga = await getMangaVolumes(url);
-	chapters = await getVolumeChapters(manga.volumes[1]);
-	c_list = await construct_chapters(chapters);
-	await (downloadChapters(c_list));
+	downloadManga(manga);
+	// chapters = await getVolumeChapters(manga.volumes[1]);
+	// c_list = await construct_chapters(chapters);
+	// await (downloadChapters(c_list));
 	console.log(manga);
 	
 	return(0);
