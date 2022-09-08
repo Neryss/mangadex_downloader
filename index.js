@@ -2,7 +2,6 @@ require('dotenv').config();
 const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
-const axiosRetry = require('axios-retry');
 let infos;
 
 /*
@@ -64,7 +63,6 @@ async function	downloadFile(url, dir_name, name)
 		if (fs.existsSync(actual_path))
 			resolve;
 		const writer = fs.createWriteStream(actual_path);
-
 		axios({
 			method: "GET",
 			url: url,
@@ -185,13 +183,16 @@ async function	downloadManga(manga)
 		c_list = await construct_chapters(chapters);
 		await downloadChapters(c_list);
 		//	TODO: find a better wy to handle 429
-		//	I mean, it workd but it sucks so...
-		await delay(30000);
+		//	I mean, it works but it sucks so...
+		// if (k % 2 == 0)
+			await delay(30000);
 	}
 }
 
 //	TODO: create flexible download solution (directories, name etc...)
 //	TODO: json to handle already downloaded volumes
+//	TODO: handle wip chapters (currently none)
+
 async function	main()
 {
 	if(!process.argv[2])
@@ -202,7 +203,8 @@ async function	main()
 	infos = await parseUrl(process.argv[2]);
 	if (!fs.existsSync("./" + infos.title))
 		fs.mkdir("./" + infos.title,{ recursive: true }, (err) => {
-			console.log("error: " + err);
+			if (err)
+				console.log("error: " + err);
 		});
 	manga = await getMangaVolumes(infos.parsedUrl);
 	chapters = await getVolumeChapters(manga.volumes[11]);
