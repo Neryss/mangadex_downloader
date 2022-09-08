@@ -3,6 +3,7 @@ const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
 const axiosRetry = require('axios-retry');
+let infos;
 
 /*
 // if you need to use authentification for any reason, you can use the following function
@@ -104,13 +105,11 @@ async function	getMangaVolumes(id)
 
 async function	getVolumeChapters(data)
 {
-	// console.log(data);
 	let urls = new Array(Object.keys(data.chapters).length);
 	let i = 0;
 	for (let key in data.chapters)
 	{
 		urls[i] = await getChapter(data.chapters[key].id);
-		// await delay(300);
 		urls[i].chapter_number = data.chapters[key].chapter;
 		i++;
 	}
@@ -145,13 +144,14 @@ async function	downloadChapters(urls)
 {
 	for (i = 0; i < urls.length; i++)
 	{
-		if (!fs.existsSync("./chapter" + urls[i].id))
-			fs.mkdir("./chapter" + urls[i].id,{ recursive: true }, (err) => {
-				console.log("error: " + err);
+		if (!fs.existsSync("./" + infos.title + "/chapter" + urls[i].id))
+			fs.mkdir("./" + infos.title + "/chapter" + urls[i].id,{ recursive: true }, (err) => {
+				if (err)
+					console.log("error: " + err);
 		})
 		for (j = 0; j < urls[i].length; j++)
 		{
-			downloadFile(urls[i][j], "chapter" + urls[i].id, "page" + j + ".png");
+			downloadFile(urls[i][j], "./" + infos.title + "/chapter" + urls[i].id, "page" + j + ".png");
 			console.log(`chapter ${urls[i].id}, page ${j} done`);
 		}
 	}
@@ -163,9 +163,14 @@ async function	downloadChapters(urls)
 
 async function	parseUrl(mangaUrl)
 {
-	parsedUrl = mangaUrl.substring(mangaUrl.indexOf('title/') + 6);
-	parsedUrl = parsedUrl.substring(0, parsedUrl.indexOf('/'));
-	return (parsedUrl);
+	const parsed = {
+		parsedUrl: null,
+		title: null
+	};
+	parsed.parsedUrl = mangaUrl.substring(mangaUrl.indexOf('title/') + 6);
+	parsed.title = parsed.parsedUrl.split('/').pop();
+	parsed.parsedUrl = parsed.parsedUrl.substring(0, parsed.parsedUrl.indexOf('/'));
+	return (parsed);
 }
 
 function delay(time) {
@@ -177,15 +182,16 @@ async function	downloadManga(manga)
 	for (k = 1; k < Object.keys(manga.volumes).length; k++)
 	{
 		chapters = await getVolumeChapters(manga.volumes[k]);
-		console.log("####### CHAPTERS HERE #######")
-		console.log(chapters);
 		c_list = await construct_chapters(chapters);
 		await downloadChapters(c_list);
+		//	TODO: find a better wy to handle 429
+		//	I mean, it workd but it sucks so...
+		await delay(30000);
 	}
 }
 
-//	TODO create flexible download solution (directories, name etc...)
-//	TODO fix rate limit
+//	TODO: create flexible download solution (directories, name etc...)
+//	TODO: json to handle already downloaded volumes
 async function	main()
 {
 	if(!process.argv[2])
@@ -193,14 +199,15 @@ async function	main()
 		console.error("error: enter url as argument");
 		return (1);
 	}
-	url = await parseUrl(process.argv[2]);
-	manga = await getMangaVolumes(url);
-	downloadManga(manga);
-	// chapters = await getVolumeChapters(manga.volumes[1]);
-	// c_list = await construct_chapters(chapters);
-	// await (downloadChapters(c_list));
-	console.log(manga);
-	
+	infos = await parseUrl(process.argv[2]);
+	if (!fs.existsSync("./" + infos.title))
+		fs.mkdir("./" + infos.title,{ recursive: true }, (err) => {
+			console.log("error: " + err);
+		});
+	manga = await getMangaVolumes(infos.parsedUrl);
+	chapters = await getVolumeChapters(manga.volumes[11]);
+	c_list = await construct_chapters(chapters);
+	await downloadManga(manga);
 	return(0);
 }
 
