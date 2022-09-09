@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
+const rl = require('readline');
 let infos;
 
 /*
@@ -193,14 +194,30 @@ async function	downloadManga(manga)
 //	TODO: json to handle already downloaded volumes
 //	TODO: handle wip chapters (currently none)
 
+async function	handleStdin()
+{
+	readLine = rl.createInterface({
+		input: process.stdin,
+		output: process.stdout
+	});
+	let temp;
+	return new Promise((resolve, reject) => {
+		console.log("Enter a valid mangadex url: ");
+		readLine.question("enter url: ", (url) => {
+			temp = url;
+			readLine.close();
+			infos = parseUrl(temp);
+			resolve(infos);
+		})
+	})
+}
+
 async function	main()
 {
 	if(!process.argv[2])
-	{
-		console.error("error: enter url as argument");
-		return (1);
-	}
-	infos = await parseUrl(process.argv[2]);
+		infos = await handleStdin();
+	else
+		infos = await parseUrl(process.argv[2]);
 	if (!fs.existsSync("./" + infos.title))
 		fs.mkdir("./" + infos.title,{ recursive: true }, (err) => {
 			if (err)
