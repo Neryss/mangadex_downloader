@@ -176,6 +176,10 @@ function delay(time) {
 	return new Promise(resolve => setTimeout(resolve, time));
 }
 
+/*
+//	download the whole manga, 30s/chapter for now because of api limit rate
+*/
+
 async function	downloadManga(manga)
 {
 	for (k = 1; k < Object.keys(manga.volumes).length; k++)
@@ -190,7 +194,6 @@ async function	downloadManga(manga)
 	}
 }
 
-//	TODO: create flexible download solution (directories, name etc...)
 //	TODO: json to handle already downloaded volumes
 //	TODO: handle wip chapters (currently none)
 
@@ -224,8 +227,8 @@ async function	main()
 				console.log("error: " + err);
 		});
 	manga = await getMangaVolumes(infos.parsedUrl);
-	chapters = await getVolumeChapters(manga.volumes[11]);
-	c_list = await construct_chapters(chapters);
+	// chapters = await getVolumeChapters(manga.volumes[11]);
+	// c_list = await construct_chapters(chapters);
 	await downloadManga(manga);
 	return(0);
 }
