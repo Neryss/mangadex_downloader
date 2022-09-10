@@ -136,6 +136,8 @@ async function	construct_chapters(chapters)
 //	each chapter has a file name `chapter${number}`, containing the pages number from 0 to the last page as a name
 */
 
+//	TODO: might add a check for already downloaded volumes, but it seems to be too much work for minimal returns
+
 async function	downloadChapters(urls)
 {
 	for (i = 0; i < urls.length; i++)
@@ -147,8 +149,13 @@ async function	downloadChapters(urls)
 		})
 		for (j = 0; j < urls[i].length; j++)
 		{
-			downloadFile(urls[i][j], "./" + infos.title + "/chapter" + urls[i].id, "page" + j + ".png");
-			console.log(`chapter ${urls[i].id}, page ${j} done`);
+			if (!fs.existsSync("./" + infos.title + "/chapter" + urls[i].id + "/page" + j + ".png"))
+			{
+				downloadFile(urls[i][j], "./" + infos.title + "/chapter" + urls[i].id, "page" + j + ".png");
+				console.log(`chapter ${urls[i].id}, page ${j} done`);
+			}
+			else
+				console.log("page already downloaded!");
 		}
 	}
 }
@@ -191,7 +198,6 @@ async function	downloadManga(manga)
 	}
 }
 
-//	TODO: json to handle already downloaded volumes
 //	TODO: handle wip chapters (currently none)
 
 async function	handleStdin()
