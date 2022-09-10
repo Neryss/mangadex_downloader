@@ -56,7 +56,6 @@ async function	construct_urls(data)
 	})
 }
 
-// TODO create dir directly here to handle multiple chapters
 async function	downloadFile(url, dir_name, name)
 {
 	return new Promise((resolve, reject) => {
@@ -136,8 +135,6 @@ async function	construct_chapters(chapters)
 //	download chapters from a volume as the following pattern:
 //	each chapter has a file name `chapter${number}`, containing the pages number from 0 to the last page as a name
 */
-
-// TODO mulitple volumes at the same time
 
 async function	downloadChapters(urls)
 {
