@@ -107,8 +107,11 @@ async function	getVolumeChapters(data)
 	let i = 0;
 	for (let key in data.chapters)
 	{
-		urls[i] = await getChapter(data.chapters[key].id);
-		urls[i].chapter_number = data.chapters[key].chapter;
+		if (!fs.existsSync("./" + infos.title + "/chapter" + data.chapters[key].id + "/page" + j + ".png"))
+		{
+			urls[i] = await getChapter(data.chapters[key].id);
+			urls[i].chapter_number = data.chapters[key].chapter;
+		}
 		i++;
 	}
 	return (urls);
@@ -188,6 +191,7 @@ async function	downloadManga(manga)
 {
 	for (k = 1; k < Object.keys(manga.volumes).length; k++)
 	{
+		//	TODO: Change download check to add it here, help with api rate limit
 		chapters = await getVolumeChapters(manga.volumes[k]);
 		c_list = await construct_chapters(chapters);
 		await downloadChapters(c_list);
@@ -195,6 +199,12 @@ async function	downloadManga(manga)
 		//	I mean, it works but it sucks so...
 		// if (k % 2 == 0)
 		await delay(30000);
+	}
+	if(manga.volumes['none'])
+	{
+		chapters = await getVolumeChapters(manga.volumes['none']);
+		c_list = await construct_chapters(chapters);
+		await downloadChapters(c_list);
 	}
 }
 
@@ -229,7 +239,8 @@ async function	main()
 			if (err)
 				console.log("error: " + err);
 		});
-	manga = await getMangaVolumes(infos.parsedUrl);
+	manga = await getMangaVolumes(infos.parsedUrl);;
+	// console.log(manga.volumes);
 	await downloadManga(manga);
 	return(0);
 }
