@@ -187,7 +187,7 @@ async function	downloadManga(manga)
 		//	TODO: find a better wy to handle 429
 		//	I mean, it works but it sucks so...
 		// if (k % 2 == 0)
-			await delay(30000);
+		await delay(30000);
 	}
 }
 
@@ -224,8 +224,6 @@ async function	main()
 				console.log("error: " + err);
 		});
 	manga = await getMangaVolumes(infos.parsedUrl);
-	// chapters = await getVolumeChapters(manga.volumes[11]);
-	// c_list = await construct_chapters(chapters);
 	await downloadManga(manga);
 	return(0);
 }
