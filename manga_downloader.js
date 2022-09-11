@@ -101,17 +101,16 @@ async function	getMangaVolumes(id)
 //	return chapter list from the said volume of a manga
 */
 
-async function	getVolumeChapters(data)
+async function	getVolumeChapters(data, nb)
 {
 	let urls = new Array(Object.keys(data.chapters).length);
 	let i = 0;
 	for (let key in data.chapters)
 	{
-		if (!fs.existsSync("./" + infos.title + "/chapter" + data.chapters[key].id + "/page" + j + ".png"))
-		{
-			urls[i] = await getChapter(data.chapters[key].id);
-			urls[i].chapter_number = data.chapters[key].chapter;
-		}
+		if (fs.existsSync("./" + infos.title + "/chapter"))
+			return(null);
+		urls[i] = await getChapter(data.chapters[key].id);
+		urls[i].chapter_number = data.chapters[key].chapter;
 		i++;
 	}
 	return (urls);
@@ -192,13 +191,13 @@ async function	downloadManga(manga)
 	for (k = 1; k < Object.keys(manga.volumes).length; k++)
 	{
 		//	TODO: Change download check to add it here, help with api rate limit
-		chapters = await getVolumeChapters(manga.volumes[k]);
+		chapters = await getVolumeChapters(manga.volumes[k], k);
 		c_list = await construct_chapters(chapters);
 		await downloadChapters(c_list);
+		await delay(30000);
 		//	TODO: find a better wy to handle 429
 		//	I mean, it works but it sucks so...
 		// if (k % 2 == 0)
-		await delay(30000);
 	}
 	if(manga.volumes['none'])
 	{
