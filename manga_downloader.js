@@ -93,7 +93,7 @@ async function	getMangaVolumes(id)
 			reject(err);
 		})
 	}).catch((err) => {
-		console.log(err);
+		console.log("error: invalid url");
 	})
 }
 
@@ -101,7 +101,7 @@ async function	getMangaVolumes(id)
 //	return chapter list from the said volume of a manga
 */
 
-async function	getVolumeChapters(data, nb)
+async function	getVolumeChapters(data)
 {
 	let urls = new Array(Object.keys(data.chapters).length);
 	let i = 0;
@@ -191,7 +191,7 @@ async function	downloadManga(manga)
 	for (k = 1; k < Object.keys(manga.volumes).length; k++)
 	{
 		//	TODO: Change download check to add it here, help with api rate limit
-		chapters = await getVolumeChapters(manga.volumes[k], k);
+		chapters = await getVolumeChapters(manga.volumes[k]);
 		c_list = await construct_chapters(chapters);
 		await downloadChapters(c_list);
 		await delay(30000);
@@ -238,8 +238,9 @@ async function	main()
 			if (err)
 				console.log("error: " + err);
 		});
-	manga = await getMangaVolumes(infos.parsedUrl);;
-	// console.log(manga.volumes);
+	manga = await getMangaVolumes(infos.parsedUrl);
+	if(!manga)
+		return(1);
 	await downloadManga(manga);
 	return(0);
 }
