@@ -190,7 +190,6 @@ async function	downloadManga(manga)
 {
 	for (k = 1; k < Object.keys(manga.volumes).length; k++)
 	{
-		//	TODO: Change download check to add it here, help with api rate limit
 		chapters = await getVolumeChapters(manga.volumes[k]);
 		c_list = await construct_chapters(chapters);
 		await downloadChapters(c_list);
@@ -217,8 +216,7 @@ async function	handleStdin()
 	});
 	let temp;
 	return new Promise((resolve, reject) => {
-		console.log("Enter a valid mangadex url: ");
-		readLine.question("enter url: ", (url) => {
+		readLine.question("enter mangadex url: ", (url) => {
 			temp = url;
 			readLine.close();
 			infos = parseUrl(temp);
