@@ -138,8 +138,6 @@ async function	construct_chapters(chapters)
 //	each chapter has a file name `chapter${number}`, containing the pages number from 0 to the last page as a name
 */
 
-//	TODO: might add a check for already downloaded volumes, but it seems to be too much work for minimal returns
-
 async function	downloadChapters(urls)
 {
 	for (i = 0; i < urls.length; i++)
